@@ -1,0 +1,78 @@
+# Trading Bot Configuration
+# =========================
+
+# Exchange Settings
+exchange:
+  id: binance
+  testnet: true
+  api_key: ${EXCHANGE_API_KEY}
+  api_secret: ${EXCHANGE_API_SECRET}
+
+# Trading Pair
+trading:
+  symbol: BTC/USDT
+  timeframe: 1h
+  initial_balance: 10000.0
+
+# Risk Management
+risk:
+  max_position_size: 0.95
+  max_leverage: 1.0
+  stop_loss_pct: 0.02
+  take_profit_pct: 0.05
+  max_drawdown: 0.10
+
+# Data Fetching
+data:
+  historical_days: 365
+  update_interval: 3600  # seconds
+
+# Feature Engineering
+features:
+  use_talib: true
+  include_volatility: true
+  include_sentiment: true
+
+# LSTM Model
+lstm:
+  input_size: 50  # Will be set dynamically based on features
+  hidden_size: 128
+  num_layers: 2
+  dropout: 0.2
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 32
+  sequence_length: 60
+
+# RL Agent
+rl:
+  algorithm: PPO  # Options: PPO, A2C, SAC
+  policy: MlpPolicy
+  learning_rate: 0.0003
+  total_timesteps: 100000
+  window_size: 20
+
+# Backtesting
+backtest:
+  initial_cash: 10000.0
+  commission: 0.001
+  target_sharpe: 1.5
+
+# Sentiment Analysis
+sentiment:
+  model: ProsusAI/finbert
+  enabled: true
+  update_interval: 1800  # seconds
+
+# Monitoring
+monitoring:
+  enable_celery: true
+  redis_url: redis://localhost:6379/0
+  log_level: INFO
+
+# Paths
+paths:
+  models: ./models
+  data: ./data
+  logs: ./logs
+  results: ./results
