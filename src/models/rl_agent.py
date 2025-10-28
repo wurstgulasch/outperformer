@@ -6,13 +6,12 @@ RL agent using Stable Baselines3 for adaptive trading strategies.
 
 import numpy as np
 import pandas as pd
-from typing import Dict, Optional, Any
+from typing import Dict
 from loguru import logger
 import gymnasium as gym
 from gymnasium import spaces
 from stable_baselines3 import PPO, A2C, SAC
 from stable_baselines3.common.vec_env import DummyVecEnv
-from stable_baselines3.common.callbacks import BaseCallback
 
 
 class TradingEnv(gym.Env):

@@ -8,6 +8,7 @@ from celery import Celery
 from celery.schedules import crontab
 from typing import Dict
 from loguru import logger
+from datetime import datetime
 import os
 
 
@@ -188,7 +189,7 @@ def monitor_performance_task() -> Dict:
             'status': 'success',
             'balance': balance,
             'position': position,
-            'timestamp': logger.time()
+            'timestamp': datetime.now().isoformat()
         }
         
         logger.info(f"Performance metrics: {metrics}")
@@ -232,7 +233,7 @@ class MonitoringService:
         """
         self.metrics_history.append({
             'type': 'trade',
-            'timestamp': logger.time(),
+            'timestamp': datetime.now().isoformat(),
             'info': trade_info
         })
         logger.info(f"Trade recorded: {trade_info}")
@@ -246,7 +247,7 @@ class MonitoringService:
         """
         self.metrics_history.append({
             'type': 'prediction',
-            'timestamp': logger.time(),
+            'timestamp': datetime.now().isoformat(),
             'info': prediction_info
         })
         logger.debug(f"Prediction recorded: {prediction_info}")

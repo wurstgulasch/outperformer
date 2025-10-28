@@ -7,7 +7,7 @@ Unit tests for backtesting module.
 import pytest
 import pandas as pd
 import numpy as np
-from src.backtesting import Backtester, MLStrategy
+from src.backtesting import Backtester
 
 
 class TestBacktester:

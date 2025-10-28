@@ -6,10 +6,8 @@ Backtesting framework using Backtrader.
 
 import backtrader as bt
 import pandas as pd
-import numpy as np
 from typing import Optional, Dict, List
 from loguru import logger
-from datetime import datetime
 
 
 class MLStrategy(bt.Strategy):

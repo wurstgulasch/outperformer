@@ -4,7 +4,7 @@ Sentiment Analysis Module
 Sentiment analysis using Hugging Face transformers.
 """
 
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+from transformers import pipeline
 from typing import List, Dict, Optional
 from loguru import logger
 import torch

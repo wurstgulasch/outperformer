@@ -83,7 +83,7 @@ def test_rl_environment():
     df = engineer.engineer_features(df)
     
     env = TradingEnv(df, initial_balance=10000.0)
-    obs = env.reset()
+    env.reset()
     
     # Take some random actions
     total_reward = 0

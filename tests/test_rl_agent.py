@@ -51,7 +51,7 @@ class TestTradingEnv:
         env = TradingEnv(sample_data, initial_balance=10000.0)
         env.reset()
         
-        obs, reward, done, info = env.step(1)  # Buy
+        env.step(1)  # Buy
         
         assert env.position > 0  # Should have BTC
         assert env.balance == 0  # Used all balance
@@ -65,7 +65,7 @@ class TestTradingEnv:
         env.step(1)
         
         # Then sell
-        obs, reward, done, info = env.step(2)
+        env.step(2)
         
         assert env.position == 0  # No BTC
         assert env.balance > 0  # Got USD back

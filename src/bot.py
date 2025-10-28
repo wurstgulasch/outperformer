@@ -8,7 +8,6 @@ import sys
 import os
 import yaml
 import argparse
-from pathlib import Path
 from loguru import logger
 from dotenv import load_dotenv
 
@@ -17,7 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from src.data import DataFetcher
 from src.features import FeatureEngineer
-from src.models import LSTMModel, LSTMTrainer, RLAgent
+from src.models import RLAgent
 from src.execution import TradeExecutor, RiskManager
 from src.backtesting import Backtester
 from src.utils import SentimentAnalyzer, MarketSentimentTracker
@@ -235,7 +234,7 @@ class TradingBot:
                 df = self.prepare_features(df)
                 
                 # Run backtest
-                results = self.run_backtest(df)
+                self.run_backtest(df)
                 
                 logger.success("Backtest completed")
                 
@@ -248,7 +247,7 @@ class TradingBot:
                 self.train_rl_agent(df)
                 
                 # Run backtest to evaluate
-                results = self.run_backtest(df)
+                self.run_backtest(df)
                 
                 logger.success("Training completed")
                 

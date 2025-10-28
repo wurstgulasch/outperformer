@@ -6,7 +6,7 @@ Handles feature engineering using technical indicators (TA-Lib) and custom featu
 
 import pandas as pd
 import numpy as np
-from typing import Optional, List
+from typing import List
 from loguru import logger
 
 try:
@@ -229,11 +229,12 @@ class FeatureEngineer:
         logger.info(f"Feature engineering complete. Shape: {df.shape}")
         return df
 
-    def get_feature_columns(self, exclude_ohlcv: bool = True) -> List[str]:
+    def get_feature_columns(self, df: pd.DataFrame, exclude_ohlcv: bool = True) -> List[str]:
         """
-        Get list of feature columns.
+        Get list of feature columns from a dataframe.
 
         Args:
+            df: DataFrame with engineered features
             exclude_ohlcv: Whether to exclude basic OHLCV columns
 
         Returns:
@@ -241,8 +242,7 @@ class FeatureEngineer:
         """
         base_cols = ['open', 'high', 'low', 'close', 'volume']
         
-        # This should be called after features are engineered
         # Returns all columns except the basic OHLCV if requested
         if exclude_ohlcv:
-            return [col for col in self.feature_columns if col not in base_cols]
-        return self.feature_columns
+            return [col for col in df.columns if col not in base_cols]
+        return list(df.columns)

@@ -7,7 +7,7 @@ Handles data ingestion from cryptocurrency exchanges using CCXT.
 import ccxt
 import pandas as pd
 from datetime import datetime, timedelta
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 from loguru import logger
 
 
