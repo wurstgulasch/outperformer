@@ -9,7 +9,7 @@ numpy==1.26.4
 ta-lib==0.4.32
 
 # Machine Learning
-torch==2.6.0
+torch==2.8.0
 stable-baselines3==2.3.2
 scikit-learn==1.5.2
 gymnasium==0.29.1
@@ -18,7 +18,7 @@ gymnasium==0.29.1
 backtrader==1.9.78.123
 
 # NLP & Sentiment
-transformers==4.48.0
+transformers==4.53.0
 huggingface-hub==0.27.0
 
 # Task Management
@@ -31,8 +31,8 @@ pyyaml==6.0.2
 loguru==0.7.3
 
 # API & Web
-requests==2.32.3
-aiohttp==3.11.10
+requests==2.32.4
+aiohttp==3.12.14
 
 # Monitoring
 prometheus-client==0.21.1
