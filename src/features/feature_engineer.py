@@ -6,7 +6,7 @@ Handles feature engineering using technical indicators (TA-Lib) and custom featu
 
 import pandas as pd
 import numpy as np
-from typing import List
+from typing import List, Optional
 from loguru import logger
 
 try:
@@ -206,12 +206,56 @@ class FeatureEngineer:
         logger.debug("Added volume features")
         return df
 
-    def engineer_features(self, df: pd.DataFrame) -> pd.DataFrame:
+    def add_sentiment_features(self, df: pd.DataFrame, sentiment_scores: Optional[pd.Series] = None) -> pd.DataFrame:
+        """
+        Add sentiment analysis features.
+
+        Args:
+            df: DataFrame with OHLCV data
+            sentiment_scores: Optional series of sentiment scores (-1 to 1)
+
+        Returns:
+            DataFrame with sentiment features
+        """
+        df = df.copy()
+
+        if sentiment_scores is not None:
+            # Align sentiment scores with dataframe index
+            df['sentiment_score'] = sentiment_scores.reindex(df.index, method='ffill')
+            
+            # Rolling sentiment averages
+            df['sentiment_ma_7'] = df['sentiment_score'].rolling(7).mean()
+            df['sentiment_ma_30'] = df['sentiment_score'].rolling(30).mean()
+            
+            # Sentiment momentum
+            df['sentiment_momentum'] = df['sentiment_score'].diff(7)
+            
+            # Sentiment volatility
+            df['sentiment_volatility'] = df['sentiment_score'].rolling(7).std()
+            
+            logger.debug("Added sentiment features")
+        else:
+            # Add placeholder sentiment features if no scores provided
+            df['sentiment_score'] = 0.0
+            df['sentiment_ma_7'] = 0.0
+            df['sentiment_ma_30'] = 0.0
+            df['sentiment_momentum'] = 0.0
+            df['sentiment_volatility'] = 0.0
+            logger.debug("Added placeholder sentiment features")
+
+        return df
+
+    def engineer_features(
+        self,
+        df: pd.DataFrame,
+        sentiment_scores: Optional[pd.Series] = None
+    ) -> pd.DataFrame:
         """
         Apply all feature engineering steps.
 
         Args:
             df: DataFrame with OHLCV data
+            sentiment_scores: Optional sentiment scores to integrate
 
         Returns:
             DataFrame with all engineered features
@@ -222,6 +266,7 @@ class FeatureEngineer:
         df = self.add_volatility_features(df)
         df = self.add_price_features(df)
         df = self.add_volume_features(df)
+        df = self.add_sentiment_features(df, sentiment_scores)
 
         # Fill NaN values
         df = df.bfill().ffill()

@@ -10,7 +10,7 @@ from loguru import logger
 
 
 class RiskManager:
-    """Risk management for trade execution."""
+    """Risk management for trade execution with dynamic adjustments."""
 
     def __init__(
         self,
@@ -18,7 +18,8 @@ class RiskManager:
         max_leverage: float = 1.0,
         stop_loss_pct: float = 0.02,
         take_profit_pct: float = 0.05,
-        max_drawdown: float = 0.10
+        max_drawdown: float = 0.10,
+        use_dynamic_sl: bool = True
     ):
         """
         Initialize risk manager.
@@ -26,19 +27,49 @@ class RiskManager:
         Args:
             max_position_size: Maximum position size as fraction of balance
             max_leverage: Maximum leverage allowed
-            stop_loss_pct: Stop loss percentage
+            stop_loss_pct: Stop loss percentage (base value)
             take_profit_pct: Take profit percentage
             max_drawdown: Maximum allowed drawdown
+            use_dynamic_sl: Whether to adjust stop-loss based on volatility
         """
         self.max_position_size = max_position_size
         self.max_leverage = max_leverage
         self.stop_loss_pct = stop_loss_pct
         self.take_profit_pct = take_profit_pct
         self.max_drawdown = max_drawdown
+        self.use_dynamic_sl = use_dynamic_sl
         
         self.peak_balance = 0.0
         
-        logger.info("RiskManager initialized")
+        logger.info("RiskManager initialized with dynamic adjustments")
+
+    def adjust_stop_loss_for_volatility(self, atr_value: float, current_price: float) -> float:
+        """
+        Adjust stop loss based on ATR (Average True Range) volatility.
+
+        Args:
+            atr_value: Current ATR value
+            current_price: Current market price
+
+        Returns:
+            Adjusted stop loss percentage
+        """
+        if not self.use_dynamic_sl or atr_value <= 0 or current_price <= 0:
+            return self.stop_loss_pct
+        
+        # Calculate volatility-adjusted stop loss (ATR as percentage of price)
+        atr_pct = atr_value / current_price
+        
+        # Adjust stop loss: use max of base stop loss or 2x ATR
+        adjusted_sl = max(self.stop_loss_pct, atr_pct * 2)
+        
+        # Cap at 10% to avoid excessive risk
+        adjusted_sl = min(adjusted_sl, 0.10)
+        
+        if adjusted_sl != self.stop_loss_pct:
+            logger.info(f"Adjusted stop loss from {self.stop_loss_pct:.2%} to {adjusted_sl:.2%} based on volatility")
+        
+        return adjusted_sl
 
     def check_position_size(self, amount: float, balance: float) -> float:
         """
@@ -78,21 +109,35 @@ class RiskManager:
 
         return True
 
-    def calculate_stop_loss(self, entry_price: float, side: str) -> float:
+    def calculate_stop_loss(
+        self,
+        entry_price: float,
+        side: str,
+        atr_value: Optional[float] = None,
+        current_price: Optional[float] = None
+    ) -> float:
         """
-        Calculate stop loss price.
+        Calculate stop loss price with optional volatility adjustment.
 
         Args:
             entry_price: Entry price
             side: Trade side ('buy' or 'sell')
+            atr_value: Optional ATR value for dynamic adjustment
+            current_price: Optional current price for volatility calculation
 
         Returns:
             Stop loss price
         """
-        if side == 'buy':
-            return entry_price * (1 - self.stop_loss_pct)
+        # Determine stop loss percentage (with optional volatility adjustment)
+        if atr_value and current_price:
+            sl_pct = self.adjust_stop_loss_for_volatility(atr_value, current_price)
         else:
-            return entry_price * (1 + self.stop_loss_pct)
+            sl_pct = self.stop_loss_pct
+        
+        if side == 'buy':
+            return entry_price * (1 - sl_pct)
+        else:
+            return entry_price * (1 + sl_pct)
 
     def calculate_take_profit(self, entry_price: float, side: str) -> float:
         """

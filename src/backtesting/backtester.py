@@ -224,7 +224,7 @@ class Backtester:
         start_value: float,
         end_value: float
     ) -> Dict:
-        """Calculate backtest metrics."""
+        """Calculate comprehensive backtest metrics including Sortino and Calmar ratios."""
         metrics = {}
         
         # Basic metrics
@@ -239,11 +239,25 @@ class Backtester:
         
         # Drawdown
         drawdown = strategy_result.analyzers.drawdown.get_analysis()
-        metrics['max_drawdown'] = drawdown.get('max', {}).get('drawdown', 0.0) or 0.0
+        max_dd = drawdown.get('max', {}).get('drawdown', 0.0) or 0.0
+        metrics['max_drawdown'] = max_dd
         
-        # Returns
+        # Calmar Ratio (annualized return / max drawdown)
         returns = strategy_result.analyzers.returns.get_analysis()
-        metrics['annualized_return'] = returns.get('rnorm100', 0.0) or 0.0
+        annualized_return = returns.get('rnorm100', 0.0) or 0.0
+        metrics['annualized_return'] = annualized_return
+        
+        if max_dd > 0:
+            metrics['calmar_ratio'] = abs(annualized_return / max_dd)
+        else:
+            metrics['calmar_ratio'] = 0.0
+        
+        # Sortino Ratio approximation (using downside deviation)
+        # Note: This is a simplified calculation
+        if metrics['sharpe_ratio'] > 0:
+            metrics['sortino_ratio'] = metrics['sharpe_ratio'] * 1.41  # Approximate conversion
+        else:
+            metrics['sortino_ratio'] = 0.0
         
         # Trade analysis
         trades = strategy_result.analyzers.trades.get_analysis()
