@@ -8,7 +8,6 @@ import ccxt
 from typing import Dict, Optional, List
 from loguru import logger
 from datetime import datetime
-import time
 
 
 class RiskManager:
