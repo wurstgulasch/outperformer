@@ -16,7 +16,7 @@ class TestTradingEnv:
     @pytest.fixture
     def sample_data(self):
         """Create sample data for environment."""
-        dates = pd.date_range('2024-01-01', periods=100, freq='1H')
+        dates = pd.date_range('2024-01-01', periods=100, freq='h')
         np.random.seed(42)
         
         df = pd.DataFrame({
@@ -85,7 +85,7 @@ class TestRLAgent:
     @pytest.fixture
     def sample_data(self):
         """Create sample data."""
-        dates = pd.date_range('2024-01-01', periods=100, freq='1H')
+        dates = pd.date_range('2024-01-01', periods=100, freq='h')
         np.random.seed(42)
         
         df = pd.DataFrame({

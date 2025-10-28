@@ -195,8 +195,13 @@ class FeatureEngineer:
         # Volume ratio
         df['volume_ratio'] = df['volume'] / df['volume_sma_30']
 
-        # Price-Volume trend
-        df['pv_trend'] = df['returns'] * df['volume']
+        # Price-Volume trend (only if returns exist)
+        if 'returns' in df.columns:
+            df['pv_trend'] = df['returns'] * df['volume']
+        else:
+            # Calculate returns if not present
+            returns = df['close'].pct_change()
+            df['pv_trend'] = returns * df['volume']
 
         logger.debug("Added volume features")
         return df
@@ -219,7 +224,7 @@ class FeatureEngineer:
         df = self.add_volume_features(df)
 
         # Fill NaN values
-        df = df.fillna(method='bfill').fillna(method='ffill')
+        df = df.bfill().ffill()
 
         logger.info(f"Feature engineering complete. Shape: {df.shape}")
         return df

@@ -16,7 +16,7 @@ class TestFeatureEngineer:
     @pytest.fixture
     def sample_data(self):
         """Create sample OHLCV data."""
-        dates = pd.date_range('2024-01-01', periods=300, freq='1H')
+        dates = pd.date_range('2024-01-01', periods=300, freq='h')
         np.random.seed(42)
         
         close_prices = 30000 + np.cumsum(np.random.randn(300) * 100)
